@@ -1,0 +1,33 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build:
+      context: ../API
+    restart: unless-stopped
+    env_file:
+      - ../API/.env
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/cdm-data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  ui:
+    build:
+      context: ../oocaa-ui
+      args:
+        REACT_APP_API_URL: http://localhost:3000
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+
+volumes:
+  mongo_data:

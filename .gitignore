@@ -1,0 +1,10 @@
+**/*.tfstate
+**/*.tfstate.*
+**/.terraform/
+**/*.tfvars
+
+**/.env
+
+.DS_Store
+
+/dump/
