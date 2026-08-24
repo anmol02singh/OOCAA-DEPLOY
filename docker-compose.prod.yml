@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    image: 007188702034.dkr.ecr.us-east-1.amazonaws.com/oocaa-api:latest
+    restart: unless-stopped
+    env_file:
+      - ./api.env
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/cdm-data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  ui:
+    image: 007188702034.dkr.ecr.us-east-1.amazonaws.com/oocaa-ui:latest
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+
+volumes:
+  mongo_data:

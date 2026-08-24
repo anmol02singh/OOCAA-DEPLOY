@@ -54,11 +54,12 @@ resource "aws_security_group" "oocaa" {
 
 resource "aws_instance" "oocaa" {
   ami = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   subnet_id = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.oocaa.id]
   key_name = aws_key_pair.oocaa.key_name
   iam_instance_profile = aws_iam_instance_profile.ec2_ecr.name
+  user_data_replace_on_change = true
 
   user_data = <<-EOF
     #!/bin/bash
@@ -71,6 +72,11 @@ resource "aws_instance" "oocaa" {
     apt-get update
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
     usermod -aG docker ubuntu
+    fallocate -l 2G /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+    echo '/swapfile none swap sw 0 0' >> /etc/fstab
   EOF
 
   tags = { Name = "oocaa-server" }
