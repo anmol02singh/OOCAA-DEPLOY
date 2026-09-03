@@ -61,6 +61,14 @@ resource "aws_instance" "oocaa" {
   iam_instance_profile = aws_iam_instance_profile.ec2_ecr.name
   user_data_replace_on_change = true
 
+  root_block_device {
+    volume_size = 30
+  }
+  
+  lifecycle {
+    ignore_changes = [ami]
+  }
+  
   user_data = <<-EOF
     #!/bin/bash
     apt-get update
